@@ -1,3 +1,13 @@
+'''
+Author: Josef LaFranchise
+Adapted from run_video.py script from Depth Anything V2 Repo
+Date: 11/22/2024
+
+CS 7180: Advanced Perception
+
+run_webcam.py
+'''
+
 import argparse
 import cv2
 import matplotlib
