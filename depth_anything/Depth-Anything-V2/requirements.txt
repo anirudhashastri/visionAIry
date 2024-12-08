@@ -4,3 +4,11 @@ matplotlib
 opencv-python
 torch
 torchvision
+flask
+flask-cors
+ultralytics
+numpy
+Pillow
+scipy
+scikit-image
+tqdm
