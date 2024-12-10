@@ -58,8 +58,8 @@ if __name__ == '__main__':
     
     cap = cv2.VideoCapture(source)  # Initialize webcam
 
-    window_width = 600
-    window_height = 600
+    window_width = 1000
+    window_height = 1000
 
     margin_width = 50
     cmap = matplotlib.colormaps.get_cmap('Spectral_r')
@@ -79,8 +79,8 @@ if __name__ == '__main__':
             break
         
         frameIndex += 1
-        if frameIndex % 4 != 0:
-            continue
+        #if frameIndex % 4 != 0:
+        #    continue
         
         resized_frame = cv2.resize(frame, (window_width, window_height))
         
