@@ -1,10 +1,8 @@
 '''
-Author: Josef LaFranchise
+Author: Josef LaFranchise , Anirudha Shastri, elio khouri, Karthik Koduru
 Adapted from run_video.py script from Depth Anything V2 Repo
 Date: 11/22/2024
-
 CS 7180: Advanced Perception
-
 run_webcam.py
 '''
 

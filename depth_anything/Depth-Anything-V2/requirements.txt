@@ -12,3 +12,5 @@ Pillow
 scipy
 scikit-image
 tqdm
+Flask-SocketIO
+eventlet
