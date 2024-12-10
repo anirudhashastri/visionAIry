@@ -1,5 +1,4 @@
 venv
 checkpoints
-*.pt
 __pycache__
 runs
