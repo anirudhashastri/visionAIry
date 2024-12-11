@@ -16,12 +16,22 @@ import matplotlib
 import numpy as np
 import torch
 import threading
+import time
 
 from metric_depth.depth_anything_v2.dpt import DepthAnythingV2
 from ultralytics import YOLO
 from assistant import generte_object_reponse
 from flask import Flask, Response
 from phone_camera_input_flask import get_latest_frame, start_server
+
+
+from LLMassistant import call_generate_llm_response_in_thread
+
+from groq import Groq
+from yapper import Yapper, PiperSpeaker, PiperVoice, PiperQuality
+import sys
+
+
 
 
 if __name__ == '__main__':
@@ -34,7 +44,7 @@ if __name__ == '__main__':
     parser.add_argument('--encoder', type=str, default='vitl', choices=['vits', 'vitb', 'vitl'])
     parser.add_argument('--grayscale', dest='grayscale', action='store_true', help='do not apply colorful palette')
     parser.add_argument('--nodepth', dest='no_depth', action='store_true', help='hide the depth map')
-    parser.add_argument('--inputsource', type=str, default='webcam', choices=['webcam', 'phone'], help='Input source: webcam or phone camera') # For Flask support
+    parser.add_argument('--inputsource', type=str, default='phone', choices=['webcam', 'phone'], help='Input source: webcam or phone camera') # For Flask support
     
     args = parser.parse_args()
     
@@ -45,6 +55,37 @@ if __name__ == '__main__':
     else:
         print("[-] No GPU Found")
     
+    
+    # Enable optimization
+    cv2.setUseOptimized(True)
+    if cv2.useOptimized():
+        print(" [+]OpenCV optimizations are enabled!")
+    else:
+        print("[-] OpenCV optimizations are NOT enabled.")
+
+    # Initialize Groq client with API key from environment variables
+    groq_api_key = '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'
+
+    if not groq_api_key:
+        print("GROQ_API_KEY not found in environment variables.")
+        sys.exit(1)
+
+    try:
+        client = Groq(api_key=groq_api_key)
+        print("Groq client initialized successfully.")
+    except Exception as e:
+        print(f"Failed to initialize Groq client : {e}")
+        sys.exit(1)
+    print("[+] Groq api active")
+
+
+    speaker = PiperSpeaker(
+            voice=PiperVoice.LESSAC,
+            quality=PiperQuality.HIGH,
+        )
+    print("[+] yapper Speaker Initialized")
+
+
     model_configs = {
         'vits': {'encoder': 'vits', 'features': 64, 'out_channels': [48, 96, 192, 384]},
         'vitb': {'encoder': 'vitb', 'features': 128, 'out_channels': [96, 192, 384, 768]},
@@ -85,6 +126,11 @@ if __name__ == '__main__':
     
     frameIndex = 0
     
+    start_time = time.time()  # Record the start time
+    n = 7  # Set the interval in seconds
+    speaker_flag = False
+    speaker_counter = 0
+
     """
     Capture Loop
     
@@ -147,6 +193,8 @@ if __name__ == '__main__':
         depth = depth.astype(np.uint8)
         depth = (cmap(depth)[:, :, :3] * 255)[:, :, ::-1].astype(np.uint8)
 
+        
+        object_dict = {}
         # Object Detection Loop
         for result in combined_results:
             box = result["box"]
@@ -159,7 +207,7 @@ if __name__ == '__main__':
             min_depth = np.min(original_depth[y1:y2, x1:x2])
             
             label = f"{model_COCO.names[cls] if source == 'COCO' else 'door'} {conf:.2f} - {min_depth:.2f} m"
-            
+            object_dict[label] = min_depth
 
             cv2.rectangle(resized_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.putText(resized_frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
@@ -167,11 +215,27 @@ if __name__ == '__main__':
             
             # Generate object response
             object_name = model_COCO.names[cls] if source == "COCO" else "door"
-            generte_object_reponse(object_name, min_depth, conf)
+            #generte_object_reponse(object_name, min_depth, conf)
 
         cv2.putText(resized_frame, f"{center_depth:.2f} m", (depth.shape[0]//2,depth.shape[1]//2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
         
+        # Timer logic to call API every n seconds
+        current_time = time.time()  # Get the current time
+        elapsed_time = current_time - start_time  # Calculate elapsed time
         
+        
+        if elapsed_time >= n and object_dict and speaker_flag == False :
+            speaker_flag = call_generate_llm_response_in_thread(object_dict,speaker,client,threading)
+            start_time = current_time  # Reset the start time
+            
+        else: 
+            speaker_counter += 1
+            if speaker_counter == 7:
+                speaker_flag = False
+                speaker_counter = 0
+
+
+                
         # Display results
         cv2.imshow("Depth Estimate", resized_frame)
 
