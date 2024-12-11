@@ -160,27 +160,20 @@ if __name__ == '__main__':
             
             label = f"{model_COCO.names[cls] if source == 'COCO' else 'door'} {conf:.2f} - {min_depth:.2f} m"
             
-            if args.no_depth:
-                cv2.rectangle(resized_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                cv2.putText(resized_frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-            else:
-                cv2.rectangle(depth, (x1, y1), (x2, y2), (0, 255, 0), 2)
-                cv2.putText(depth, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+            cv2.rectangle(resized_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(resized_frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            
             
             # Generate object response
             object_name = model_COCO.names[cls] if source == "COCO" else "door"
             generte_object_reponse(object_name, min_depth, conf)
 
-        if args.no_depth:
-            cv2.putText(resized_frame, f"{center_depth:.2f} m", (depth.shape[0]//2,depth.shape[1]//2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
-        else:
-            cv2.putText(depth, f"{center_depth:.2f} m", (depth.shape[0]//2,depth.shape[1]//2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
+        cv2.putText(resized_frame, f"{center_depth:.2f} m", (depth.shape[0]//2,depth.shape[1]//2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
+        
         
         # Display results
-        if args.no_depth:
-            cv2.imshow("Depth Estimate", resized_frame)
-        else:
-            cv2.imshow("Video Feed", depth)
+        cv2.imshow("Depth Estimate", resized_frame)
 
         # Break loop on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
