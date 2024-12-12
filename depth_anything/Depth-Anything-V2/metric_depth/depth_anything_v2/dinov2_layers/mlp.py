@@ -7,7 +7,11 @@
 # References:
 #   https://github.com/facebookresearch/dino/blob/master/vision_transformer.py
 #   https://github.com/rwightman/pytorch-image-models/tree/master/timm/layers/mlp.py
-
+"""
+Authors: Lihe Yang, Bingyi Kang, Zilong Huang, Zhen Zhao, Xiaogang Xu, Jiashi Feng, Hengshuang Zhao
+Depth Anything V2
+mlp.py
+"""
 
 from typing import Callable, Optional
 

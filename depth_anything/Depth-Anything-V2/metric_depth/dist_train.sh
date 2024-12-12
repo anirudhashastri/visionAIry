@@ -1,3 +1,10 @@
+"""
+Authors: Lihe Yang, Bingyi Kang, Zilong Huang, Zhen Zhao, Xiaogang Xu, Jiashi Feng, Hengshuang Zhao
+Depth Anything V2
+dist_train.sh
+"""
+
+
 #!/bin/bash
 now=$(date +"%Y%m%d_%H%M%S")
 

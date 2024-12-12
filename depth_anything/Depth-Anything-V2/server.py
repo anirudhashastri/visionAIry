@@ -1,3 +1,9 @@
+"""
+Authors: Elio Khouri, Anirudha Shastri, Josef LaFranchise, Karthik Koduru
+Date: 11/22/2024
+CS 7180: Advanced Perception
+server.py
+"""
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import cv2

@@ -1,12 +1,11 @@
-'''
-Author: Josef LaFranchise , Anirudha Shastri
-Adapted from run_video.py script from Depth Anything V2 Repo
+"""
+Authors: Josef LaFranchise, Anirudha Shastri, Elio Khouri, Karthik Koduru
+Adapted from run_video.py script from Depth Anything V2.
+Added YOLO integration for metric depth. Added downscaling for depth calculations.
 Date: 11/22/2024
-
 CS 7180: Advanced Perception
-
-run_webcam_metric.py
-'''
+run_webcam_metric_combined.py
+"""
 
 import argparse
 import cv2

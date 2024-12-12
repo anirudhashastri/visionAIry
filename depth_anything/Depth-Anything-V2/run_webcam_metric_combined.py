@@ -1,10 +1,11 @@
-'''
-Author: Josef LaFranchise , Anirudha Shastri, elio khouri, Karthik Koduru
-Adapted from run_video.py script from Depth Anything V2 Repo
+"""
+Authors: Anirudha Shastri, Elio Khouri, Josef LaFranchise, Karthik Koduru
+Adapted from run_video.py script from Depth Anything V2.
+Added YOLO integration, LLM API commuincation, and Yapper TTS.
 Date: 11/22/2024
 CS 7180: Advanced Perception
 run_webcam_metric_combined.py
-'''
+"""
 # FOR MPS
 # import os
 # os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"

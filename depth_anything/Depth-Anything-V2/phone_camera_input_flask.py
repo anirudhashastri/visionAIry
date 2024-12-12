@@ -1,6 +1,5 @@
 '''
-Author: Josef LaFranchise , Anirudha Shastri, elio khouri, Karthik Koduru
-Adapted from run_video.py script from Depth Anything V2 Repo
+Author: Elio Khouri, Josef LaFranchise, Anirudha Shastri, Karthik Koduru
 Date: 11/22/2024
 CS 7180: Advanced Perception
 phone_camera_input_flask.py

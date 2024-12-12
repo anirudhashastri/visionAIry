@@ -1,3 +1,9 @@
+"""
+Authors: Lihe Yang, Bingyi Kang, Zilong Huang, Zhen Zhao, Xiaogang Xu, Jiashi Feng, Hengshuang Zhao
+Depth Anything V2
+hypersim.py
+"""
+
 import cv2
 import h5py
 import numpy as np

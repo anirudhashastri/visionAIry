@@ -1,4 +1,9 @@
 """
+Authors: Lihe Yang, Bingyi Kang, Zilong Huang, Zhen Zhao, Xiaogang Xu, Jiashi Feng, Hengshuang Zhao
+Depth Anything V2
+depth_to_pointcloud.py
+"""
+"""
 Born out of Depth Anything V1 Issue 36
 Make sure you have the necessary libraries installed.
 Code by @1ssb

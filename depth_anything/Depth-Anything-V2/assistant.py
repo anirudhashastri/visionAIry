@@ -1,11 +1,9 @@
-'''
-Author: Josef LaFranchise
+"""
+Authors: Josef LaFranchise, Anirudha Shastri, Elio Khouri, Karthik Koduru
 Date: 11/22/2024
-
 CS 7180: Advanced Perception
-
-responses.py
-'''
+assitant.py
+"""
 
 confidence_threshold = 0.6
 

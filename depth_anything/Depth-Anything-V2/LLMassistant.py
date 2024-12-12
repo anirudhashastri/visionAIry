@@ -1,4 +1,9 @@
-
+"""
+Authors: Anirudha Shastri, Josef LaFranchise, Elio Khouri, Karthik Koduru
+Date: 11/22/2024
+CS 7180: Advanced Perception
+LLMassistant.py
+"""
 
 def safely_stop_speaker(speaker):
     """

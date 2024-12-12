@@ -1,6 +1,7 @@
 '''
-Author: Josef LaFranchise , Anirudha Shastri, elio khouri, Karthik Koduru
-Adapted from run_video.py script from Depth Anything V2 Repo
+Author: Josef LaFranchise, Anirudha Shastri, Elio Khouri, Karthik Koduru
+Adapted from run_video.py script from Depth Anything V2. 
+Added YOLO integration, Flask sever communication, LLM API commuincation, and Yapper TTS.
 Date: 11/22/2024
 CS 7180: Advanced Perception
 run_webcam_metric_combined_flask.py

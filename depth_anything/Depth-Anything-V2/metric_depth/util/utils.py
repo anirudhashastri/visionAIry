@@ -1,3 +1,9 @@
+"""
+Authors: Lihe Yang, Bingyi Kang, Zilong Huang, Zhen Zhao, Xiaogang Xu, Jiashi Feng, Hengshuang Zhao
+Depth Anything V2
+utils.py
+"""
+
 import os
 import re
 import numpy as np
