@@ -15,4 +15,4 @@ tqdm
 Flask-SocketIO
 eventlet
 groq
-yapper
+yapper-tts
