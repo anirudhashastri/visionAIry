@@ -22,7 +22,7 @@ def generate_llm_reponse(info_dict,speaker,client):
         label_name = key.split()
         print(label_name[0])
         labels.append(label_name[0])
-        distances.append(int(distance))
+        distances.append(round(distance,1))
 
     prompt = [
     {

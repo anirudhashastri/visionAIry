@@ -40,7 +40,7 @@ if __name__ == '__main__':
     
     parser = argparse.ArgumentParser(description='Depth Anything V2')
 
-    parser.add_argument('--encoder', type=str, default='vitl', choices=['vits', 'vitb', 'vitl'])
+    parser.add_argument('--encoder', type=str, default='vits', choices=['vits', 'vitb', 'vitl'])
     parser.add_argument('--grayscale', dest='grayscale', action='store_true', help='do not apply colorful palette')
     parser.add_argument('--nodepth', dest='no_depth', action='store_true', help='hide the depth map')
     
