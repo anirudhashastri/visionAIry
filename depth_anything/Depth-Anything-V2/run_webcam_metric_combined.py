@@ -16,6 +16,7 @@ import matplotlib
 import numpy as np
 import torch
 import time
+import os
 
 from metric_depth.depth_anything_v2.dpt import DepthAnythingV2
 
@@ -98,11 +99,10 @@ if __name__ == '__main__':
     depth_anything.load_state_dict(torch.load(f'checkpoints/depth_anything_v2_metric_{dataset}_{args.encoder}.pth', map_location='cpu'))
     depth_anything = depth_anything.to(DEVICE).eval()
 
-    source = 0  # Set this for webcam
-
-    #source = r'E:\VisionAIry\common\videos\20241104_221732.mp4'
+    input_source = 0  # Set this for webcam
+    #input_source = r'E:\VisionAIry\common\videos\20241104_221732.mp4'
     
-    cap = cv2.VideoCapture(source)  # Initialize webcam
+    cap = cv2.VideoCapture(input_source)  # Initialize webcam
 
     window_width = 600
     window_height = 600
@@ -220,7 +220,7 @@ if __name__ == '__main__':
 
         else:
             cv2.imshow("Video Feed", depth)
-            #cv2.imwrite('saved_image.jpg', depth)
+            # cv2.imwrite('saved_image.jpg', depth)
 
 
         # Break loop on 'q' key press
