@@ -47,6 +47,7 @@ This project addresses challenges in assistive technology by providing reliable,
 3. Create a folder called checkpoints and place the downloaded model inside of it.
 4. Create a anaconda enviroment and install the libaries in requirements.txt.
 5. Activate the enviroment.
+6. (Windows) To run on the GPU, you may have to follow the instruction on the pytorch website to get torch-cuda installed, if it is not already installed: https://pytorch.org/get-started/locally/
 
 #### Run with webcam
 
