@@ -26,19 +26,35 @@ throttle_interval = 1 / 3  # Process at 3 FPS (333ms)
 
 @app.route('/')
 def index():
+    """
+    The index page.
+    """
     return "Flask server is running!", 200
 
 @socketio.on('connect')
 def on_connect():
+    """
+    Sends a response when client connects.
+    """
     print("WebSocket: Client connected.")
     emit('ack', {'message': 'Connected to server!'})
 
 @socketio.on('disconnect')
 def on_disconnect():
+    """
+    Triggered when a client disconnects.
+    """
     print("WebSocket: Client disconnected.")
 
 @socketio.on('frame')
 def handle_frame(data):
+    """
+    Takes a incoming frame and places it in the frame queue. Also throttles the
+    amount of frames that are added to the queue.
+    
+    Args:
+        data - The frame data
+    """
     global last_frame_time
 
     # Get current time
@@ -68,6 +84,11 @@ def handle_frame(data):
 
 @app.route('/upload_frame', methods=['POST'])
 def upload_frame():
+    """
+    Takes a incoming frame from a POST request and places it in the frame queue. 
+    Also throttles the amount of frames that are added to the queue.
+    
+    """
     global last_frame_time
 
     # Get current time
@@ -100,6 +121,12 @@ def upload_frame():
         return jsonify({'error': str(e)}), 500
 
 def get_latest_frame():
+    """
+    Returns the next frame in the frame queue.
+    
+    Returns:
+        frame - The next frame, None if no frames in frame queue
+    """
     global last_frame_time  # To track the time since last log
     if frame_queue.empty():
         # Only log every 1 second to reduce spam
@@ -118,6 +145,9 @@ def get_latest_frame():
     return frame
 
 def start_server():
+    """
+    Initializes the server.
+    """
     # Get the local IP address
     hostname = socket.gethostname()
     local_ip = socket.gethostbyname(hostname)
@@ -133,6 +163,12 @@ def start_server():
     socketio.run(app, host='0.0.0.0', port=5001, debug=False, use_reloader=False)
 
 def broadcast_ip(port=5001):
+    """
+    Broadcast IP address and port. Broadcast at an interval of every 2 seconds.
+    
+    Args:
+        port - Port to use
+    """
     udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
@@ -146,5 +182,8 @@ def broadcast_ip(port=5001):
         time.sleep(2)  # Broadcast every 2 seconds
 
 if __name__ == '__main__':
+    """
+    Main entry point of the program. Initializes server and broadcasts IP.
+    """
     threading.Thread(target=broadcast_ip, daemon=True).start()
     start_server()

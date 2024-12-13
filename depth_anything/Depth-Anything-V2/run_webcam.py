@@ -18,21 +18,28 @@ from depth_anything_v2.dpt import DepthAnythingV2
 from ultralytics import YOLO
 
 if __name__ == '__main__':
+    """
+    Main entry point of the script. Loads a pretrained YOLO model to detect objects in the scene and
+    add bounding boxes. Also runs Depth Anything V2 on the image to produce a depth map which we then
+    transfer the bounding boxes to.
+    """ 
     
+    # Initialize YOLO
     model = YOLO("yolo11n.pt")
 
     results = model.train(data="coco8.yaml", epochs = 3)
     results = model.val()
     results = model("https://ultralytics.com/images/bus.jpg")
     
+    # Parse the provided arguments.
     parser = argparse.ArgumentParser(description='Depth Anything V2')
 
     parser.add_argument('--encoder', type=str, default='vits', choices=['vits', 'vitb', 'vitl', 'vitg'])
-    
     parser.add_argument('--grayscale', dest='grayscale', action='store_true', help='do not apply colorful palette')
     
     args = parser.parse_args()
     
+    # Setup GPU device to run with pytorch (if available)
     DEVICE = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu'
     
     model_configs = {
@@ -46,10 +53,11 @@ if __name__ == '__main__':
     depth_anything.load_state_dict(torch.load(f'checkpoints/depth_anything_v2_{args.encoder}.pth', map_location='cpu'))
     depth_anything = depth_anything.to(DEVICE).eval()
 
-    # source = 0
+    # source = 0 # Uncomment for webcam
     source = "../../common/videos/20241104_221555.mp4"
         
-    cap = cv2.VideoCapture(source)  # Initialize webcam
+    # Initialize webcam or video
+    cap = cv2.VideoCapture(source)  
 
     window_width = 600
     window_height = 600
@@ -61,15 +69,23 @@ if __name__ == '__main__':
     
     frameIndex = 0
     
+    """
+    Capture Loop
+    
+    Process frames as fast as possible, whether from a video file or live camera feed. Terminates when
+    the video ends, user quits the application, or camera is disconnected.
+    """
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
         
+        # We keep track of the frame index to allow us to allow us to process every nth frame.
         frameIndex += 1
         if frameIndex % 6 != 0:
             continue
         
+        # Run YOLO and Depth Anything V2 on the frame.
         resized_frame = cv2.resize(frame , (window_width, window_height))
         results = model.predict(resized_frame)
 
@@ -80,6 +96,7 @@ if __name__ == '__main__':
             
         depth = (cmap(depth)[:, :, :3] * 255)[:, :, ::-1].astype(np.uint8)
 
+        # We loop over all of the object bounding and transfer them to the depth map image.
         for result in results[0].boxes:
             x1, y1, x2, y2 = map(int, result.xyxy[0].tolist())
             conf = result.conf[0]
@@ -89,13 +106,14 @@ if __name__ == '__main__':
             cv2.rectangle(depth, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.putText(depth, label, (x1, y1 -10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
 
-        # Display results
+        # Display results with bounding boxes.
         cv2.imshow("Depth Estimate", depth)
 
-        # Break loop on 'q' key press
+        # Break loop on 'q' key press and exit the application.
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+    # Clean up resources
     cap.release()
     cv2.destroyAllWindows()
     print("[+] Successfully Cleaned Up Resources")

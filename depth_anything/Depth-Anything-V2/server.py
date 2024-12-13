@@ -25,6 +25,9 @@ depth_model = depth_model.eval()
 
 @app.route('/process_frame', methods=['POST'])
 def process_frame():
+    """
+    Processes a single frame and generates a response containing the detections.
+    """
     # Get the image from the request
     file = request.files.get('frame')
     if not file:

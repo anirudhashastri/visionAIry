@@ -36,10 +36,18 @@ import threading
 
 
 if __name__ == '__main__':
+    """
+    Main entry point of the script. Loads 2 pretrained YOLO models to detect objects in the scene and
+    add bounding boxes. Also runs the Depth Anything V2 metric model on the image to produce a depth which
+    is used to determine the distance of object identified by YOLO. It then passes the detection and depth information
+    to an LLM to produce a response read out by Yapper TTS.
+    """ 
     
+    # Initialize pretrained YOLO and our custom YOLO model.
     model_COCO = YOLO("yolo11n.pt")  # COCO model
     model_door = YOLO("yolo_custom_weights.pt")  # Door-specific model
     
+    # Parse the provided arguments.
     parser = argparse.ArgumentParser(description='Depth Anything V2')
 
     parser.add_argument('--encoder', type=str, default='vits', choices=['vits', 'vitb', 'vitl'])
@@ -48,8 +56,7 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     
-    
-
+    # Setup GPU device to run with pytorch (if available)
     DEVICE = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu'
     
     if torch.cuda.is_available():
@@ -57,11 +64,10 @@ if __name__ == '__main__':
     else:
         print("[-] No GPU Found")
     
-    # Check if optimization is enabled
-    # Enable optimization
+    # Enable optimization and run a check.
     cv2.setUseOptimized(True)
     if cv2.useOptimized():
-        print(" [+]OpenCV optimizations are enabled!")
+        print("[+] OpenCV optimizations are enabled!")
     else:
         print("[-] OpenCV optimizations are NOT enabled.")
 
@@ -80,7 +86,7 @@ if __name__ == '__main__':
         sys.exit(1)
     print("[+] Groq api active")
 
-
+    # Initialize Yapper TTS speaker 
     speaker = PiperSpeaker(
             voice=PiperVoice.LESSAC,
             quality=PiperQuality.HIGH,
@@ -100,10 +106,11 @@ if __name__ == '__main__':
     depth_anything.load_state_dict(torch.load(f'checkpoints/depth_anything_v2_metric_{dataset}_{args.encoder}.pth', map_location='cpu'))
     depth_anything = depth_anything.to(DEVICE).eval()
 
-    input_source = 0  # Set this for webcam
-    #input_source = r'E:\VisionAIry\common\videos\20241104_221732.mp4'
+    source = 0  # Set this for webcam
+    source = "../../common/videos/20241210_235216.mp4"
     
-    cap = cv2.VideoCapture(input_source)  # Initialize webcam
+     # Initialize webcam or video  
+    cap = cv2.VideoCapture(source)
 
     window_width = 600
     window_height = 600
@@ -123,13 +130,15 @@ if __name__ == '__main__':
     """
     Capture Loop
     
-    Process frames as fast as possible, whether from a video file or live camera feed.
+    Process frames as fast as possible, whether from a video file or live camera feed. Terminates when
+    the video ends, user quits the application, or camera is disconnected.
     """
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
         
+        # We keep track of the frame index to allow us to allow us to process every nth frame.
         frameIndex += 1
         #if frameIndex % 4 != 0:
         #    continue
@@ -153,14 +162,14 @@ if __name__ == '__main__':
             if model_door.names[cls] == "door":  # Only include door class
                 combined_results.append({"box": box, "source": "DOOR"})
 
-        # Depth estimation
+        # Downscale the image for faster depth calculations.
         downscale_factor = 2
         down_scaled_frame = cv2.resize(frame, (window_width // downscale_factor, window_height // downscale_factor))
 
         depth = depth_anything.infer_image(down_scaled_frame, window_width // downscale_factor)
         center_depth = depth[depth.shape[0] // 2, depth.shape[1] // 2]
         
-        # Upscale to original size
+        # Upscale the depth map back to original size.
         depth = cv2.resize(depth, (window_width, window_height))
         original_depth = depth.copy()
 
@@ -169,7 +178,14 @@ if __name__ == '__main__':
         depth = (cmap(depth)[:, :, :3] * 255)[:, :, ::-1].astype(np.uint8)
 
         object_dict = {}
-        # Object Detection Loop
+        
+        """ 
+        Object Detection Loop
+        
+        Iterates over all of the bounding boxes of the objects detected by the two YOLO models. Assigns a depth value to each object
+        by taking the minimum depth value contained with in the bounding box. Draws the bounding boxes on either the depth map or
+        the original image.  
+        """
         for result in combined_results:
             box = result["box"]
             source = result["source"]
@@ -189,10 +205,7 @@ if __name__ == '__main__':
                 cv2.rectangle(depth, (x1, y1), (x2, y2), (0, 255, 0), 2)
                 cv2.putText(depth, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
             
-            # Generate object response
             object_name = model_COCO.names[cls] if source == "COCO" else "door"
-            #generte_object_reponse(object_name, min_depth, conf)
-        #print(object_dict)
 
         if args.no_depth:
             cv2.putText(resized_frame, f"{center_depth:.2f} m", (depth.shape[0]//2,depth.shape[1]//2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
@@ -202,7 +215,6 @@ if __name__ == '__main__':
         # Timer logic to call API every n seconds
         current_time = time.time()  # Get the current time
         elapsed_time = current_time - start_time  # Calculate elapsed time
-        
         
         if elapsed_time >= n and object_dict and speaker_flag == False :
             speaker_flag = call_generate_llm_response_in_thread(object_dict,speaker,client,threading)
@@ -215,7 +227,7 @@ if __name__ == '__main__':
                 speaker_counter = 0
                 
         
-        # Display results
+        # Display results in a window.
         if args.no_depth:
             cv2.imshow("Depth Estimate", resized_frame)
 
@@ -224,7 +236,7 @@ if __name__ == '__main__':
             # cv2.imwrite('saved_image.jpg', depth)
 
 
-        # Break loop on 'q' key press
+        # Break loop on 'q' key press and exit the application.
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 

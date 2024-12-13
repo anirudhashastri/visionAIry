@@ -4,18 +4,19 @@ Date: 11/22/2024
 CS 7180: Advanced Perception
 assitant.py
 """
-
 confidence_threshold = 0.6
 
-""" Produces a response from a template based on the given object and its distance in the scene.
+def generte_object_reponse(object_name, distance, confidence):
+    """ 
+    Produces a response from a template based on the given object and its distance in the scene.
 
     Args:
      - object_name : name of the object 
      - distance : distance of the object from the camera
      - confidence : confidence level that the object is classified correctly
 
-"""
-def generte_object_reponse(object_name, distance, confidence):
+    """
+    
     response = ""
     article = "a"
     

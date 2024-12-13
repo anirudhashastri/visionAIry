@@ -20,9 +20,16 @@ from ultralytics import YOLO
 from assistant import generte_object_reponse
 
 if __name__ == '__main__':
+    """
+    Main entry point of the script. Loads a pretrained YOLO model to detect objects in the scene and
+    add bounding boxes. Also runs the Depth Anything V2 metric model on the image to produce a depth which
+    is used to determine the distance of object identified by YOLO.
+    """ 
     
+    # Initialize YOLO
     model = YOLO("yolo11n.pt")
     
+    # Parse the provided arguments.
     parser = argparse.ArgumentParser(description='Depth Anything V2')
 
     parser.add_argument('--encoder', type=str, default='vitl', choices=['vits', 'vitb', 'vitl'])
@@ -31,6 +38,7 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     
+    # Setup GPU device to run with pytorch (if available)
     DEVICE = 'cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu'
     
     if torch.cuda.is_available():
@@ -51,10 +59,11 @@ if __name__ == '__main__':
     depth_anything.load_state_dict(torch.load(f'checkpoints/depth_anything_v2_metric_{dataset}_{args.encoder}.pth', map_location='cpu'))
     depth_anything = depth_anything.to(DEVICE).eval()
 
-    source = 0 # Set this for webcam
-    #source = "../../common/videos/20241104_221555.mp4"
-        
-    cap = cv2.VideoCapture(source)  # Initialize webcam
+    # source = 0 # Uncomment for webcam
+    source = "../../common/videos/20241104_221555.mp4"
+      
+    # Initialize webcam or video  
+    cap = cv2.VideoCapture(source)  
 
     window_width = 600
     window_height = 600
@@ -69,34 +78,36 @@ if __name__ == '__main__':
     """
     Capture Loop
     
-    Process frames as fast as possible, whever from a video file or live camera feed.
+    Process frames as fast as possible, whether from a video file or live camera feed. Terminates when
+    the video ends, user quits the application, or camera is disconnected.
     """
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
         
+        # We keep track of the frame index to allow us to allow us to process every nth frame.
         frameIndex += 1
         if frameIndex % 4 != 0:
             continue
         
+        # Run YOLO and Depth Anything V2 on the frame.
         resized_frame = cv2.resize(frame , (window_width, window_height))
         results = model.predict(resized_frame)
 
+        # Downscale the image for faster depth calculations.
         downscale_factor = 2
-        # Downscale the image
         down_scaled_frame = cv2.resize(frame, (window_width//downscale_factor, window_height//downscale_factor))
 
         depth = depth_anything.infer_image(down_scaled_frame, window_width//downscale_factor)   
         center_depth = depth[depth.shape[0]//2,depth.shape[1]//2]
         
-        # Upscale to original size
+        # Upscale the depth map back to original size.
         depth = cv2.resize(depth, (window_width, window_height))
         original_depth = depth.copy()
         
         depth = (depth - depth.min()) / (depth.max() - depth.min()) * 255.0
-        depth = depth.astype(np.uint8)
-            
+        depth = depth.astype(np.uint8)  
         depth = (cmap(depth)[:, :, :3] * 255)[:, :, ::-1].astype(np.uint8)
 
         """ 
@@ -124,21 +135,23 @@ if __name__ == '__main__':
             
             generte_object_reponse(model.names[cls], min_depth, conf)
 
+        # Lable the center depth of the image.
         if args.no_depth:
             cv2.putText(resized_frame, f"{center_depth:.2f} m", (depth.shape[0]//2,depth.shape[1]//2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
         else:
             cv2.putText(depth, f"{center_depth:.2f} m", (depth.shape[0]//2,depth.shape[1]//2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
 
-        # Display results
+        # Display results in a window.
         if args.no_depth:
             cv2.imshow("Depth Estimate", resized_frame)
         else:
             cv2.imshow("Video Feed", depth)
 
-        # Break loop on 'q' key press
+        # Break loop on 'q' key press and exit the application.
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+    # Clean up resources
     cap.release()
     cv2.destroyAllWindows()
     print("[+] Successfully Cleaned Up Resources")

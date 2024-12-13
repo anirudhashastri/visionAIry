@@ -16,7 +16,15 @@ def safely_stop_speaker(speaker):
         print("Speaker is not speaking.")
 
 def generate_llm_reponse(info_dict,speaker,client):
+    """
+    Generates a response from llama-3.1-8b-instant based on the information int the dictionary. Sends the 
+    result to the speaker to play as TTS.
     
+    Args:
+     - info_dict : dictionary containing object names and distances
+     - speaker : speaker that plays the TTS
+     - client : groq API client
+    """
             
     labels = []
     distances = []
@@ -29,6 +37,7 @@ def generate_llm_reponse(info_dict,speaker,client):
         labels.append(label_name[0])
         distances.append(round(distance,1))
 
+    # Prompt that is used to determine how the LLM describes the scene
     prompt = [
     {
         "role": "system",
@@ -63,11 +72,16 @@ def generate_llm_reponse(info_dict,speaker,client):
             print(f"Failed to generate completion : {e}")
         
 
-def call_generate_llm_response_in_thread(object_dict, speaker, client,threading):
+def call_generate_llm_response_in_thread(object_dict, speaker, client, threading):
     """
     Wrapper function to call `generate_llm_reponse` in a separate thread.
+    
+    Args:
+     - object_dict : dictionary containing object names and distances
+     - speaker : speaker that plays the audio
+     - client : groq API client
+     - threading : threading instance
     """
-
 
     thread = threading.Thread(target=generate_llm_reponse, args=(object_dict, speaker, client))
     thread.daemon = True  # Daemonize thread to ensure it ends with the main program
