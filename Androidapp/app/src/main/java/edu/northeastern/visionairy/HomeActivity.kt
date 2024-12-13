@@ -1,5 +1,12 @@
 package edu.northeastern.visionairy
 
+/*
+ Author: Josef LaFranchise, Anirudha Shastri, Elio Khouri, Karthik Koduru
+ Date: 12/12/2024
+ CS 7180: Advanced Perception
+ File: HomeActivity.kt
+*/
+
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
