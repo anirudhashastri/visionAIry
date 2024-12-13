@@ -1,6 +1,5 @@
 """
 Authors: Josef LaFranchise, Anirudha Shastri, Elio Khouri, Karthik Koduru
-Adapted from run_video.py script from Depth Anything V2.
 Added YOLO integration.
 Date: 11/22/2024
 CS 7180: Advanced Perception

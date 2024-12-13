@@ -1,5 +1,5 @@
 """
-Author: Josef LaFranchise
+Authors: Josef LaFranchise, Anirudha Shastri, Elio Khouri, Karthik Koduru
 Date: 11/17/2024
 CS 7180: Advanced Perception
 train_yolo.py
