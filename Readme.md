@@ -39,6 +39,7 @@ This project addresses challenges in assistive technology by providing reliable,
 
 ### Peliminary Setup (Mac)
 1. If on a Mac, Use this command to set the environment variables so you can run the models on cpu: ```export PYTORCH_ENABLE_MPS_FALLBACK=1```. Use this command to check the variable is set: ```echo $PYTORCH_ENABLE_MPS_FALLBACK```.
+2. We have provided a GROC API key in the Final_Project_links.pdf. The API keys needs entered in both run_webcam_metric_combined_flask.py and run_webcam_metric_combined.py
 
 ### Depth Anything V2:
 

@@ -71,8 +71,8 @@ if __name__ == '__main__':
     else:
         print("[-] OpenCV optimizations are NOT enabled.")
 
-    # Initialize Groq client with API key from environment variables
-    groq_api_key = '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'
+    # NOTE: Initialize Groq client with API key (Add API key here)
+    groq_api_key = ''
 
     if not groq_api_key:
         print("GROQ_API_KEY not found in environment variables.")
