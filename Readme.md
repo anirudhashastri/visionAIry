@@ -125,12 +125,12 @@ This project addresses challenges in assistive technology by providing reliable,
      Path: `.../visionairy/app/src/main/res/xml/network_security_config.xml`
  
      ```xml
-<?xml version="1.0" encoding="utf-8"?>
-<network-security-config>
-<domain-config cleartextTrafficPermitted="true">
-<domain includeSubdomains="true">192.168.1.174</domain>
-</domain-config>
-</network-security-config>
+      <?xml version="1.0" encoding="utf-8"?>
+      <network-security-config>
+      <domain-config cleartextTrafficPermitted="true">
+      <domain includeSubdomains="true">192.168.1.174</domain>
+      </domain-config>
+      </network-security-config>
      ```
  
      Replace `192.168.1.174` with the IP address from the Flask server output. Note that the port number is not required in this file.
