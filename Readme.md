@@ -87,37 +87,60 @@ TEST
 
 ```plaintext
 visionAIry/
-├── __pycache__/
-├── Dataset/
-│   ├── 1D/
-│   ├── 1D-Masks/
-│   ├── 5D/
-│   ├── 5D-Masks/
-│   ├── Canon1D/
-│   ├── Canon5D/
-│   ├── colourchecker_gamma1_bit12.mat
-│   ├── real_illum_568.mat
-├── MaskedDataset/
-│   ├── Canon1D/
-│   ├── Canon5D/
-├── ProcessedDataset/
-├── .gitignore
-├── color_constancy_angular_cnn_2_fold_1.pth
-├── color_constancy_angular_cnn_2_fold_2.pth
-├── color_constancy_angular_cnn_2_fold_3.pth
-├── ColorConstancyDataset.py
-├── mask_application_script.py
-├── Network.py
-├── preprocessing.py
+├── Androidapp/
+│   ├── app/
+│   │   ├── src/
+│   │   ├── build.gradle.kts
+│   │   ├── proguard-rules.pro
+│   ├── gradle/
+│   │   ├── wrapper/
+│   │   ├── libs.versions.toml
+│   ├── build.gradle.kts
+│   ├── gradle.properties
+│   ├── gradlew
+│   ├── gradlew.bat
+│   ├── settings.gradle.kts
+├── common/
+│   ├── photos/
+│   │   ├── ground_truth/
+│   │   ├── predicted/
+│   ├── videos/
+│   │   ├── 20241104_221555.mp4
+│   │   ├── 20241104_221732.mp4
+├── DEPTH/
+│   ├── depth.ipynb
+├── depth_anything/
+│   ├── datasets/
+│   │   ├── coco8/
+│   ├── Depth-Anything-V2/
+│   │   ├── depth_anything_v2/
+│   │   ├── metric_depth/
+│   │   ├── runs/
+│   │   ├── venv/
+│   │   ├── __pycache__/
+│   │   ├── app.py
+│   │   ├── assistant.py
+│   │   ├── bus.jpg
+│   │   ├── DA-2K.md
+│   │   ├── LICENSE
+│   │   ├── LLMassistant.py
+│   │   ├── phone_camera_input_flask.py
+│   │   ├── README.md
+│   │   ├── requirements.txt
+│   │   ├── run.py
+│   │   ├── run_video.py
+│   │   ├── run_webcam.py
+│   │   ├── run_webcam_metric.py
+│   │   ├── run_webcam_metric_combined.py
+│   │   ├── run_webcam_metric_combined_flask.py
+│   │   ├── server.py
+│   │   ├── train_yolo.py
+│   │   ├── yolo11n.pt
+│   │   ├── yolo_custom_weights.pt
+├── YOLO/
+│   ├── yolo11n.pt
+│   ├── yoloTransferLearning.ipynb
 ├── Readme.md
-├── Testing.py
-├── training.py
-├── TuningNetwork.py
-├── ModelTuning.py
-├── GAN/
-│   ├── dataloader.py
-│   ├── Network.py
-│   ├── preprocessing.py
-│   ├── test.py
-│   ├── train.py
+├── yolo11n.pt
+├── yolo_custom_weights.pt
 ```
